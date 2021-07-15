@@ -34,7 +34,7 @@ class TableController < ART::Controller
 
   @[ARTA::Post("/new")]
   def create_table(request : ART::Request) : ART::Response
-    # raise ART::Exceptions::BadRequest.new "Request body is empty." unless body = request.body
+    raise ART::Exceptions::BadRequest.new "Request body is empty." unless request.body
 
     name = nil
     table_head = [] of String
@@ -46,17 +46,20 @@ class TableController < ART::Controller
       when "table_head"
         table_head << part.body.gets_to_end
       when /R\d+C\d+/
-        pp part.name
-        pp part.body.gets_to_end
-        p "---"
+        if match = part.name.match(/R(?<row>\d+)C\d+/)
+          row = match["row"].to_i
+          if table_data[row - 1]?
+            table_data[row - 1] << part.body.gets_to_end
+          else
+            table_data << [part.body.gets_to_end]
+          end
+        end
       end
     end
 
     raise ART::Exceptions::BadRequest.new "Missing table name" unless name
-
-    # name = ""
-    # table_head = ["", "", ""]
-    table_data = [["", "", ""], ["", "", ""], ["", "", ""]]
+    raise ART::Exceptions::BadRequest.new "Missing table head" unless table_head
+    raise ART::Exceptions::BadRequest.new "Missing table data" unless table_data
 
     view = ECR.render "src/show_table.ecr"
     html = ECR.render "src/layout.ecr"
