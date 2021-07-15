@@ -1,6 +1,12 @@
 require "athena"
 require "ecr"
 
+class ART::Request
+  def request : HTTP::Request
+    @request
+  end
+end
+
 class IndexController < ART::Controller
   @[ARTA::Get("/")]
   def index : ART::Response
@@ -27,10 +33,29 @@ class TableController < ART::Controller
   end
 
   @[ARTA::Post("/new")]
-  @[ARTA::RequestParam("name")]
-  @[ARTA::RequestParam("table_head")]
-  def create_table(name : String, table_head : Array(String)) : ART::Response
+  def create_table(request : ART::Request) : ART::Response
+    # raise ART::Exceptions::BadRequest.new "Request body is empty." unless body = request.body
 
+    name = nil
+    table_head = [] of String
+    table_data = [] of Array(String)
+    HTTP::FormData.parse(request.request) do |part|
+      case part.name
+      when "name"
+        name = part.body.gets_to_end
+      when "table_head"
+        table_head << part.body.gets_to_end
+      when /R\d+C\d+/
+        pp part.name
+        pp part.body.gets_to_end
+        p "---"
+      end
+    end
+
+    raise ART::Exceptions::BadRequest.new "Missing table name" unless name
+
+    # name = ""
+    # table_head = ["", "", ""]
     table_data = [["", "", ""], ["", "", ""], ["", "", ""]]
 
     view = ECR.render "src/show_table.ecr"
