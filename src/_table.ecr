@@ -1,0 +1,61 @@
+<style>
+    table {table-layout: fixed; width: 100%; border-collapse: collapse;}
+    th, td {margin: 0; padding: 0; border: thin solid gray;}
+    th {border-bottom: medium solid black}
+    table input, table button {display: block; padding: 0; margin: 0; border: 0; width: 100%;}
+    thead th:last-child {width: 2ch;}
+    thead th:nth-child(2) {width: 4ch};
+
+    tbody td:first-child {text-color: gray; text-align: center;}
+</style>
+
+<table data-controller="table">
+    <thead>
+        <tr data-table-target="head_row">
+        <template data-table-target="th_template">
+            <th>
+            <input type="text" name="table_head">
+            </th>
+        </template>
+
+        <th></th>
+
+        <%- table_head.each do |cell| -%>
+        <th>
+            <input type="text" name="table_head" value="<%= cell %>">
+        </th>
+        <%- end -%>
+
+        <th data-table-target="add_column"><button type="button" data-action="table#add_column">+</button></th>
+        </tr>
+    </thead>
+
+    <tbody data-table-target="rows">
+        <template data-table-target="td_template">
+        <td>
+            <%- row = "NEW_ROW" -%>
+            <%- col = "NEW_COL" -%>
+            <% cell_id = "R#{row}C#{col}" %>
+            <input type="text" id="<%= cell_id %>" name="<%= cell_id %>">
+        </td>
+        </template>
+
+        <%- table_data.each_with_index do |row, row_index| -%>
+        <tr>
+        <td><%= row_index + 1 %></td>
+        <%- row.each_with_index do |cell, column_index| -%>
+        <td>
+            <%- row = row_index + 1 -%>
+            <%- col = column_index + 1 -%>
+            <% cell_id = "R#{row_index + 1}C#{column_index + 1}" %>
+            <input type="text" id="<%= cell_id %>" name="<%= cell_id %>" value="<%= cell %>">
+        </td>
+        <%- end -%>
+        </tr>
+        <%- end -%>
+
+        <tr data-table-target="add_row">
+        <td><button type="button" data-action="table#add_row">+</button></td>
+        </tr>
+    </tbody>
+</table>

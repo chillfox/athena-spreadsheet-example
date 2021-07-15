@@ -1,0 +1,27 @@
+<style>
+    table {table-layout: fixed; width: 100%; border-collapse: collapse;}
+    th, td {margin: 0; padding: 0; border: thin solid gray; height: 2ch;}
+    th {border-bottom: medium solid black}
+</style>
+
+<h2><%= name %></h2>
+
+<hr>
+<table>
+    <thead>
+        <tr>
+            <% table_head.each do |th| %>
+            <th><%= th %></th>
+            <% end %>
+        </tr>
+    </thead>
+    <tbody>
+        <% table_data.each do |row| %>
+        <tr>
+            <% row.each do |cell| %>
+            <td><%= cell %></td>
+            <% end %>
+        </tr>
+        <% end %>
+    </tbody>
+</table>

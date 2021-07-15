@@ -1,0 +1,13 @@
+<form action="/new" method="post">
+    <label for="name">Table:</label>
+    <input type="text" id="name" name="name" placeholder="Name" required>
+
+    <input type="submit" value="Create table">
+    <a href="/">Cancel</a>
+
+    <hr>
+
+    <%- table_head = ["", "", ""] -%>
+    <%- table_data = [["", "", ""], ["", "", ""], ["", "", ""]] -%>
+    <%= ECR.render "src/_table.ecr" %>
+</form>
